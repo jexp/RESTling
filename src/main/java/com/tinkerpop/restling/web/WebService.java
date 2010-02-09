@@ -273,13 +273,13 @@ public class WebService {
     }
 
     @GET
-    @Path("{nodeId}/relationships/dirs/{dir}")
+    @Path("{nodeId}/relationships/dir/{dir}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRelationships(@PathParam("nodeId") Long nodeId, @PathParam("dir") RelationshipDirection direction) {
         return getRelationships(nodeId, direction, new AmpersandSeparatedList());
     }
     @GET
-    @Path("{nodeId}/relationships/{types}/dirs/{dir}")
+    @Path("{nodeId}/relationships/{types}/dir/{dir}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRelationships(@PathParam("nodeId") Long nodeId, @PathParam("dir") RelationshipDirection direction,
             @PathParam("types") AmpersandSeparatedList types) {

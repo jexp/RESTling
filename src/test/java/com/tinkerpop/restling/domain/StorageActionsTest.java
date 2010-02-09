@@ -279,7 +279,7 @@ public class StorageActionsTest {
         properties.put("number", 15);
 
         RelationshipRepresentation representation = GraphDbHelper.createRelationship("LOVES");
-        GraphDbHelper.setRelationshipProperties(representation.getStartNodeId(), representation.getType(), properties);
+        GraphDbHelper.setRelationshipProperties(representation, properties);
 
         Object relationshipProperty = actions.getRelationshipProperty(representation.getStartNodeId(), representation.getType(), "foo");
         assertEquals("bar", relationshipProperty);

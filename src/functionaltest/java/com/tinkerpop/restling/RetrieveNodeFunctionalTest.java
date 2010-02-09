@@ -1,24 +1,20 @@
 package com.tinkerpop.restling;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.net.URI;
-import java.util.Map;
-
-import javax.ws.rs.core.MediaType;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import com.tinkerpop.restling.domain.DatabaseLocator;
-import com.tinkerpop.restling.domain.GraphDbHelper;
-import com.tinkerpop.restling.domain.JsonHelper;
-
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.tinkerpop.restling.domain.DatabaseLocator;
+import com.tinkerpop.restling.domain.GraphDbHelper;
+import com.tinkerpop.restling.domain.JsonHelper;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import javax.ws.rs.core.MediaType;
+import java.net.URI;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 public class RetrieveNodeFunctionalTest {
 
@@ -26,7 +22,7 @@ public class RetrieveNodeFunctionalTest {
     
     @BeforeClass
     public static void startWebServer() throws Exception {
-        nodeUri = new URI(WebServer.BASE_URI + GraphDbHelper.createNode());
+        nodeUri = new URI(FunctionalHelper.nodeUri(GraphDbHelper.createNode()));
         WebServer.INSTANCE.startServer();
     }
 
@@ -63,7 +59,7 @@ public class RetrieveNodeFunctionalTest {
     
     @Test
     public void shouldGet404WhenRetrievingNonExistentNode() throws Exception {
-        ClientResponse response = retrieveNodeFromService(nodeUri + "00000");
+        ClientResponse response = retrieveNodeFromService(FunctionalHelper.badUri());
         assertEquals(404, response.getStatus());
     }
 

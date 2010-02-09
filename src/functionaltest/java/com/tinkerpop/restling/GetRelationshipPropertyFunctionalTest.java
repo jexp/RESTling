@@ -1,25 +1,23 @@
 package com.tinkerpop.restling;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.ws.rs.core.MediaType;
-
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import com.tinkerpop.restling.domain.DatabaseLocator;
+import com.tinkerpop.restling.domain.GraphDbHelper;
+import com.tinkerpop.restling.domain.JsonHelper;
 import com.tinkerpop.restling.domain.RelationshipRepresentation;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import com.tinkerpop.restling.domain.DatabaseLocator;
-import com.tinkerpop.restling.domain.GraphDbHelper;
-import com.tinkerpop.restling.domain.JsonHelper;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
+import javax.ws.rs.core.MediaType;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class GetRelationshipPropertyFunctionalTest {
     private static String baseUri;
@@ -73,5 +71,6 @@ public class GetRelationshipPropertyFunctionalTest {
         ClientResponse response = resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
         assertNotNull(JsonHelper.createJsonFrom(response.getEntity(String.class)));
+        assertEquals(200, response.getStatus());
     }
 }

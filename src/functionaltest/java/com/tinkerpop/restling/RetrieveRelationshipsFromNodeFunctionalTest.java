@@ -1,24 +1,22 @@
 package com.tinkerpop.restling;
 
-import static org.junit.Assert.assertEquals;
-
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.core.MediaType;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
 import com.tinkerpop.restling.domain.DatabaseLocator;
 import com.tinkerpop.restling.domain.GraphDbHelper;
 import com.tinkerpop.restling.domain.JsonHelper;
 import com.tinkerpop.restling.domain.RelationshipRepresentationTest;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
+import javax.ws.rs.core.MediaType;
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 public class RetrieveRelationshipsFromNodeFunctionalTest {
 
@@ -44,7 +42,11 @@ public class RetrieveRelationshipsFromNodeFunctionalTest {
     }
 
     private ClientResponse sendRetrieveRequestToServer(Object nodeId, String path) {
-        WebResource resource = Client.create().resource(WebServer.BASE_URI + nodeId + "/relationships" + path);
+        WebResource resource = Client.create().resource(WebServer.BASE_URI + nodeId + "/relationships/dir" + path);
+        return resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+    }
+    private ClientResponse sendRetrieveRequestToServer(Object nodeId, String types, String path) {
+        WebResource resource = Client.create().resource(WebServer.BASE_URI + nodeId + "/relationships/"+types+"/dir" + path);
         return resource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
     }
 
@@ -82,7 +84,7 @@ public class RetrieveRelationshipsFromNodeFunctionalTest {
 
     @Test
     public void shouldRespondWith200AndListOfRelationshipRepresentationsWhenGettingAllTypedRelationshipsForANode() {
-        ClientResponse response = sendRetrieveRequestToServer(nodeWithRelationships, "/all/LIKES&HATES");
+        ClientResponse response = sendRetrieveRequestToServer(nodeWithRelationships, "LIKES&HATES","/all");
         assertEquals(200, response.getStatus());
         assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
         verifyRelReps(3, response.getEntity(String.class));
@@ -90,7 +92,7 @@ public class RetrieveRelationshipsFromNodeFunctionalTest {
 
     @Test
     public void shouldRespondWith200AndListOfRelationshipRepresentationsWhenGettingIncomingTypedRelationshipsForANode() {
-        ClientResponse response = sendRetrieveRequestToServer(nodeWithRelationships, "/in/LIKES");
+        ClientResponse response = sendRetrieveRequestToServer(nodeWithRelationships, "LIKES","/in");
         assertEquals(200, response.getStatus());
         assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
         verifyRelReps(1, response.getEntity(String.class));
@@ -98,7 +100,7 @@ public class RetrieveRelationshipsFromNodeFunctionalTest {
 
     @Test
     public void shouldRespondWith200AndListOfRelationshipRepresentationsWhenGettingOutgoingTypedRelationshipsForANode() {
-        ClientResponse response = sendRetrieveRequestToServer(nodeWithRelationships, "/out/HATES");
+        ClientResponse response = sendRetrieveRequestToServer(nodeWithRelationships, "HATES","/out");
         assertEquals(200, response.getStatus());
         assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getType());
         verifyRelReps(1, response.getEntity(String.class));

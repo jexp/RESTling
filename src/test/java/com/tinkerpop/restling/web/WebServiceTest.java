@@ -429,11 +429,11 @@ public class WebServiceTest {
 
     @Test
     public void shouldRespondWith200AndDataForGetRelationshipProperties() throws Exception {
-        RelationshipRepresentation relationshipId = GraphDbHelper.createRelationship("knows");
+        RelationshipRepresentation representation = GraphDbHelper.createRelationship("knows");
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("foo", "bar");
-        GraphDbHelper.setRelationshipProperties(longValue(relationshipId.getStartNodeId()),relationshipId.getType(), properties);
-        Response response = service.getRelationshipProperties(longValue(relationshipId.getStartNodeId()),relationshipId.getType());
+        GraphDbHelper.setRelationshipProperties(representation, properties);
+        Response response = service.getRelationshipProperties(longValue(representation.getStartNodeId()),representation.getType());
         assertEquals(200, response.getStatus());
         Map<String, Object> readProperties = JsonHelper.jsonToMap(response.getEntity().toString());
         assertEquals(properties, readProperties);
