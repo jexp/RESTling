@@ -1,11 +1,8 @@
 package com.tinkerpop.restling.domain;
 
-import com.tinkerpop.gremlin.models.ggm.Graph;
-import com.tinkerpop.gremlin.models.ggm.impls.neo4j.Neo4jGraph;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Transaction;
+import com.tinkerpop.gremlin.models.pgm.Graph;
+import com.tinkerpop.gremlin.models.pgm.impls.neo4j.Neo4jGraph;
 import org.neo4j.kernel.EmbeddedGraphDatabase;
-import sun.java2d.opengl.CGLGraphicsConfig;
 
 import java.net.URI;
 import java.util.concurrent.Callable;

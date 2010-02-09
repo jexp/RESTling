@@ -1,6 +1,6 @@
 package com.tinkerpop.restling.domain;
 
-import com.tinkerpop.gremlin.models.ggm.Vertex;
+import com.tinkerpop.gremlin.models.pgm.Vertex;
 
 import java.net.URI;
 import java.net.URISyntaxException;

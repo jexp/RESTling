@@ -1,8 +1,8 @@
 package com.tinkerpop.restling.domain;
 
 import org.junit.Test;
-import com.tinkerpop.gremlin.models.ggm.Vertex;
-import com.tinkerpop.gremlin.models.ggm.Edge;
+import com.tinkerpop.gremlin.models.pgm.Vertex;
+import com.tinkerpop.gremlin.models.pgm.Edge;
 
 import java.net.URI;
 import java.net.URISyntaxException;

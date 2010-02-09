@@ -1,9 +1,9 @@
 package com.tinkerpop.restling.domain;
 
-import com.tinkerpop.gremlin.models.ggm.Edge;
-import com.tinkerpop.gremlin.models.ggm.Element;
-import com.tinkerpop.gremlin.models.ggm.Graph;
-import com.tinkerpop.gremlin.models.ggm.Vertex;
+import com.tinkerpop.gremlin.models.pgm.Edge;
+import com.tinkerpop.gremlin.models.pgm.Element;
+import com.tinkerpop.gremlin.models.pgm.Graph;
+import com.tinkerpop.gremlin.models.pgm.Vertex;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 
@@ -100,7 +100,6 @@ public class GraphDbHelper {
         setRelationshipProperties(representation.getStartNodeId(),representation.getType(),properties);
     }
     public static void setRelationshipProperties(final Object startNodeId, final String label, final Map<String, Object> properties) {
-        final Graph db = getGraphDatabase(null);
         inTransaction(new Runnable() {
             public void run() {
                 final Edge edge = getRelationship(startNodeId, label);

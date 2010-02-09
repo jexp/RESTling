@@ -1,10 +1,10 @@
 package com.tinkerpop.restling.domain;
 
+import org.codehaus.jackson.map.ObjectMapper;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
-import org.codehaus.jackson.map.ObjectMapper;
 
 public class JsonHelper {
 
@@ -51,5 +51,14 @@ public class JsonHelper {
         }
         result.append("]");
         return result.toString();
+    }
+
+    public static List<Object> jsonToList(String json) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(json, List.class);
+        } catch (IOException e) {
+            throw new JsonParseRuntimeException( e );
+        }
     }
 }

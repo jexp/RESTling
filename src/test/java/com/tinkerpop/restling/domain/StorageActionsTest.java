@@ -1,9 +1,9 @@
 package com.tinkerpop.restling.domain;
 
-import com.tinkerpop.gremlin.models.ggm.Edge;
-import com.tinkerpop.gremlin.models.ggm.Element;
-import com.tinkerpop.gremlin.models.ggm.Graph;
-import com.tinkerpop.gremlin.models.ggm.Vertex;
+import com.tinkerpop.gremlin.models.pgm.Edge;
+import com.tinkerpop.gremlin.models.pgm.Element;
+import com.tinkerpop.gremlin.models.pgm.Graph;
+import com.tinkerpop.gremlin.models.pgm.Vertex;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;

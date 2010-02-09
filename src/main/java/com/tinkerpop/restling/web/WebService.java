@@ -68,7 +68,7 @@ public class WebService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{nodeId}")
-    public Response getNode(@PathParam("nodeId") Object nodeId) {
+    public Response getNode(@PathParam("nodeId") Long nodeId) {
         NodeRepresentation noderep;
         try {
             noderep = actions.retrieveNode(nodeId);
@@ -81,7 +81,7 @@ public class WebService {
     @PUT
     @Path("{nodeId}/properties")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response setNodeProperties(@PathParam("nodeId") Object nodeId, String json) {
+    public Response setNodeProperties(@PathParam("nodeId") Long nodeId, String json) {
         PropertiesMap properties;
         try {
             properties = new PropertiesMap(JsonHelper.jsonToMap(json));
@@ -99,7 +99,7 @@ public class WebService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{nodeId}/properties")
-    public Response getNodeProperties(@PathParam("nodeId") Object nodeId) {
+    public Response getNodeProperties(@PathParam("nodeId") Long nodeId) {
         try {
             PropertiesMap properties = actions.getNodeProperties(nodeId);
             if (properties.isEmpty()) {
@@ -114,7 +114,7 @@ public class WebService {
 
     @DELETE
     @Path("{nodeId}")
-    public Response deleteNode(@PathParam("nodeId") Object id) {
+    public Response deleteNode(@PathParam("nodeId") Long id) {
         try {
             actions.deleteNode(id);
         } catch (NotFoundException e) {
@@ -128,7 +128,7 @@ public class WebService {
     @PUT
     @Path("{nodeId}/properties/{key}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response setNodeProperty(@PathParam("nodeId") Object id, @PathParam("key") String key, String json) {
+    public Response setNodeProperty(@PathParam("nodeId") Long id, @PathParam("key") String key, String json) {
         try {
             actions.setNodeProperty(id, key, JsonHelper.jsonToSingleValue(json));
             return Response.ok().build();
@@ -142,12 +142,12 @@ public class WebService {
     @GET
     @Path("{nodeId}/properties/{key}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getNodeProperty(@PathParam("nodeId") Object nodeId, @PathParam("key") String key) {
+    public Response getNodeProperty(@PathParam("nodeId") Long nodeId, @PathParam("key") String key) {
         try {
             Object value = actions.getNodeProperty(nodeId, key);
             return Response.ok(JsonHelper.createJsonFrom(value)).build();
         } catch (PropertyValueException e) {
-            return Response.status(Status.NO_CONTENT).build();
+            return Response.status(Status.NOT_FOUND).build();
         } catch (NotFoundException e) {
             return Response.status(Status.NOT_FOUND).build();
         }
@@ -155,7 +155,7 @@ public class WebService {
 
     @DELETE
     @Path("{nodeId}/properties")
-    public Response removeNodeProperties(@PathParam("nodeId") Object nodeId) {
+    public Response removeNodeProperties(@PathParam("nodeId") Long nodeId) {
         try {
             actions.removeNodeProperties(nodeId);
             return Response.ok().build();
@@ -168,7 +168,7 @@ public class WebService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{nodeId}/relationships")
-    public Response createRelationship(@PathParam("nodeId") Object startNodeId, String json) {
+    public Response createRelationship(@PathParam("nodeId") Long startNodeId, String json) {
         Long endNodeId;
         String type;
         PropertiesMap properties;
@@ -201,7 +201,7 @@ public class WebService {
 
     @DELETE
     @Path("{nodeId}/properties/{key}")
-    public Response removeNodeProperty(@PathParam("nodeId") Object nodeId, @PathParam("key") String key) {
+    public Response removeNodeProperty(@PathParam("nodeId") Long nodeId, @PathParam("key") String key) {
         try {
             boolean removed = actions.removeNodeProperty(nodeId, key);
             return removed ? Response.ok().build() : Response.status(Status.NOT_FOUND).build();
@@ -273,14 +273,13 @@ public class WebService {
     }
 
     @GET
-    @Path("{nodeId}/relationships/{dir}")
+    @Path("{nodeId}/relationships/dirs/{dir}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRelationships(@PathParam("nodeId") Long nodeId, @PathParam("dir") RelationshipDirection direction) {
         return getRelationships(nodeId, direction, new AmpersandSeparatedList());
     }
-
     @GET
-    @Path("{nodeId}/relationships/{dir}/{types}")
+    @Path("{nodeId}/relationships/{types}/dirs/{dir}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRelationships(@PathParam("nodeId") Long nodeId, @PathParam("dir") RelationshipDirection direction,
             @PathParam("types") AmpersandSeparatedList types) {
@@ -347,6 +346,19 @@ public class WebService {
             } else {
                 return Response.status(Status.NOT_FOUND).build();
             }
+        } catch (NotFoundException e) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{nodeId}/path/{code:.*}")
+    public Response evaluate(@PathParam("nodeId") long id,@PathParam("code") String code) {
+        try {
+            Object result=actions.evaluate(id,code);
+            return addContentLengthHeader(Response.ok(JsonHelper.createJsonFrom(result))).build();
+
         } catch (NotFoundException e) {
             return Response.status(Status.NOT_FOUND).build();
         }

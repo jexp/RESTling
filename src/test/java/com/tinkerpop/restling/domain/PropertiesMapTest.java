@@ -1,7 +1,7 @@
 package com.tinkerpop.restling.domain;
 
 import org.junit.Test;
-import com.tinkerpop.gremlin.models.ggm.Element;
+import com.tinkerpop.gremlin.models.pgm.Element;
 
 import java.util.*;
 

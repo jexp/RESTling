@@ -153,14 +153,14 @@ public class WebServiceTest {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("foo", "bar");
         GraphDbHelper.setNodeProperties(nodeId, properties);
-        Response response = service.getNodeProperties(nodeId);
+        Response response = service.getNodeProperties(longValue(nodeId));
         assertEquals(200, response.getStatus());
     }
 
     @Test
     public void shouldRespondWith204ForGetNoNodeProperties() throws Exception {
         Object nodeId = GraphDbHelper.createNode();
-        Response response = service.getNodeProperties(nodeId);
+        Response response = service.getNodeProperties(longValue(nodeId));
         assertEquals(204, response.getStatus());
     }
 
@@ -172,7 +172,7 @@ public class WebServiceTest {
         properties.put("number", 15);
         properties.put("double", 15.7);
         GraphDbHelper.setNodeProperties(nodeId, properties);
-        Response response = service.getNodeProperties(nodeId);
+        Response response = service.getNodeProperties(longValue(nodeId));
         String jsonBody = response.getEntity().toString();
         Map<String, Object> readProperties = JsonHelper.jsonToMap(jsonBody);
         assertEquals(properties, readProperties);
@@ -182,7 +182,7 @@ public class WebServiceTest {
     public void shouldRespondWith200OnSuccessfulDelete() {
         Object id = GraphDbHelper.createNode();
 
-        Response response = service.deleteNode(id);
+        Response response = service.deleteNode(longValue(id));
 
         assertEquals(200, response.getStatus());
     }
@@ -192,7 +192,7 @@ public class WebServiceTest {
         Object id = GraphDbHelper.createNode();
         GraphDbHelper.createRelationship("LOVES", id, GraphDbHelper.createNode());
 
-        Response response = service.deleteNode(id);
+        Response response = service.deleteNode(longValue(id));
 
         assertEquals(409, response.getStatus());
     }
@@ -200,7 +200,7 @@ public class WebServiceTest {
     @Test
     public void shouldRespondWith404IfNodeToBeDeletedDoesNotExist() {
         Object nonExistentId = 999999;
-        Response response = service.deleteNode(nonExistentId);
+        Response response = service.deleteNode(longValue(nonExistentId));
 
         assertEquals(404, response.getStatus());
     }
@@ -210,7 +210,7 @@ public class WebServiceTest {
         Object nodeId = GraphDbHelper.createNode();
         String key = "foo";
         String json = "\"bar\"";
-        Response response = service.setNodeProperty(nodeId, key, json);
+        Response response = service.setNodeProperty(longValue(nodeId), key, json);
         assertEquals(200, response.getStatus());
     }
 
@@ -220,7 +220,7 @@ public class WebServiceTest {
         String key = "foo";
         String value = "bar";
         String json = "\"" + value + "\"";
-        service.setNodeProperty(nodeId, key, json);
+        service.setNodeProperty(longValue(nodeId), key, json);
         Map<String, Object> readProperties = GraphDbHelper.getNodeProperties(nodeId);
         assertEquals(Collections.singletonMap(key, value), readProperties);
     }
@@ -229,7 +229,7 @@ public class WebServiceTest {
     public void shouldRespondWith404ForSetNodePropertyOnNonExistingNode() {
         String key = "foo";
         String json = "\"bar\"";
-        Response response = service.setNodeProperty(999999, key, json);
+        Response response = service.setNodeProperty(UNKNOWN_NODE, key, json);
         assertEquals(404, response.getStatus());
     }
 
@@ -237,21 +237,21 @@ public class WebServiceTest {
     public void shouldRespondWith400ForSetNodePropertyWithInvalidJson() {
         String key = "foo";
         String json = "{invalid json";
-        Response response = service.setNodeProperty(999999, key, json);
+        Response response = service.setNodeProperty(UNKNOWN_NODE, key, json);
         assertEquals(400, response.getStatus());
     }
 
     @Test
     public void shouldRespondWith404ForGetNonExistentNodeProperty() {
         Object nodeId = GraphDbHelper.createNode();
-        Response response = service.getNodeProperty(nodeId, "foo");
-        assertEquals(204, response.getStatus());
+        Response response = service.getNodeProperty(longValue(nodeId), "foo");
+        assertEquals(404, response.getStatus());
     }
 
     @Test
     public void shouldRespondWith404ForGetNodePropertyOnNonExistentNode() {
         Object nodeId = 999999;
-        Response response = service.getNodeProperty(nodeId, "foo");
+        Response response = service.getNodeProperty(longValue(nodeId), "foo");
         assertEquals(404, response.getStatus());
     }
 
@@ -261,7 +261,7 @@ public class WebServiceTest {
         String key = "foo";
         Object value = "bar";
         GraphDbHelper.setNodeProperties(nodeId, Collections.singletonMap(key, value));
-        Response response = service.getNodeProperty(nodeId, "foo");
+        Response response = service.getNodeProperty(longValue(nodeId), "foo");
         assertEquals(200, response.getStatus());
     }
 
@@ -271,7 +271,7 @@ public class WebServiceTest {
         String key = "foo";
         Object value = "bar";
         GraphDbHelper.setNodeProperties(nodeId, Collections.singletonMap(key, value));
-        Response response = service.getNodeProperty(nodeId, "foo");
+        Response response = service.getNodeProperty(longValue(nodeId), "foo");
         assertEquals(JsonHelper.createJsonFrom(value), response.getEntity());
     }
 
@@ -279,7 +279,7 @@ public class WebServiceTest {
     public void shouldRespondWith201AndLocationWhenRelationshipIsCreatedWithoutProperties() {
         Object startNode = GraphDbHelper.createNode();
         Object endNode = GraphDbHelper.createNode();
-        Response response = service.createRelationship(startNode, "{\"to\" : \"" + WebServer.BASE_URI + endNode
+        Response response = service.createRelationship(longValue(startNode), "{\"to\" : \"" + WebServer.BASE_URI + endNode
                 + "\", \"type\" : \"LOVES\"}");
         assertEquals(201, response.getStatus());
         assertNotNull(response.getMetadata().get("Location").get(0));
@@ -289,7 +289,7 @@ public class WebServiceTest {
     public void shouldRespondWith201AndLocationWhenRelationshipIsCreatedWithProperties() {
         Object startNode = GraphDbHelper.createNode();
         Object endNode = GraphDbHelper.createNode();
-        Response response = service.createRelationship(startNode, "{\"to\" : \"" + WebServer.BASE_URI + endNode
+        Response response = service.createRelationship(longValue(startNode), "{\"to\" : \"" + WebServer.BASE_URI + endNode
                 + "\", \"type\" : \"LOVES\", \"properties\" : {\"foo\" : \"bar\"}}");
         assertEquals(201, response.getStatus());
         assertNotNull(response.getMetadata().get("Location").get(0));
@@ -299,7 +299,7 @@ public class WebServiceTest {
     public void shouldReturnRelationshipRepresentationWhenCreatingRelationship() throws Exception {
         Object startNode = GraphDbHelper.createNode();
         Object endNode = GraphDbHelper.createNode();
-        Response response = service.createRelationship(startNode, "{\"to\" : \"" + WebServer.BASE_URI + endNode
+        Response response = service.createRelationship(longValue(startNode), "{\"to\" : \"" + WebServer.BASE_URI + endNode
                 + "\", \"type\" : \"LOVES\", \"properties\" : {\"foo\" : \"bar\"}}");
         Map<String, Object> map = JsonHelper.jsonToMap((String) response.getEntity());
 
@@ -316,7 +316,7 @@ public class WebServiceTest {
     @Test
     public void shouldRespondWith404WhenTryingToCreateRelationshipFromNonExistentNode() {
         Object nodeId = GraphDbHelper.createNode();
-        Response response = service.createRelationship(1000, "{\"to\" : \"" + WebServer.BASE_URI + nodeId
+        Response response = service.createRelationship(UNKNOWN_NODE, "{\"to\" : \"" + WebServer.BASE_URI + nodeId
                 + "\", \"type\" : \"LOVES\"}");
         assertEquals(404, response.getStatus());
     }
@@ -324,7 +324,7 @@ public class WebServiceTest {
     @Test
     public void shouldRespondWith400WhenTryingToCreateRelationshipToNonExistentNode() {
         Object nodeId = GraphDbHelper.createNode();
-        Response response = service.createRelationship(nodeId, "{\"to\" : \"" + WebServer.BASE_URI + (1000)
+        Response response = service.createRelationship(longValue(nodeId), "{\"to\" : \"" + WebServer.BASE_URI + (1000)
                 + "\", \"type\" : \"LOVES\"}");
         assertEquals(400, response.getStatus());
     }
@@ -332,7 +332,7 @@ public class WebServiceTest {
     @Test
     public void shouldRespondWith400WhenTryingToCreateRelationshipToStartNode() {
         Object nodeId = GraphDbHelper.createNode();
-        Response response = service.createRelationship(nodeId, "{\"to\" : \"" + WebServer.BASE_URI + nodeId
+        Response response = service.createRelationship(longValue(nodeId), "{\"to\" : \"" + WebServer.BASE_URI + nodeId
                 + "\", \"type\" : \"LOVES\"}");
         assertEquals(400, response.getStatus());
     }
@@ -341,7 +341,7 @@ public class WebServiceTest {
     public void shouldRespondWith400WhenTryingToCreateRelationshipWithBadJson() {
         Object startNode = GraphDbHelper.createNode();
         Object endNode = GraphDbHelper.createNode();
-        Response response = service.createRelationship(startNode, "{\"to\" : \"" + WebServer.BASE_URI + endNode
+        Response response = service.createRelationship(longValue(startNode), "{\"to\" : \"" + WebServer.BASE_URI + endNode
                 + "\", \"type\" ***and junk*** : \"LOVES\"}");
         assertEquals(400, response.getStatus());
     }
@@ -350,7 +350,7 @@ public class WebServiceTest {
     public void shouldRespondWith400WhenTryingToCreateRelationshipWithUnsupportedProperties() {
         Object startNode = GraphDbHelper.createNode();
         Object endNode = GraphDbHelper.createNode();
-        Response response = service.createRelationship(startNode, "{\"to\" : \"" + WebServer.BASE_URI + endNode
+        Response response = service.createRelationship(longValue(startNode), "{\"to\" : \"" + WebServer.BASE_URI + endNode
                 + "\", \"type\" : \"LOVES\", \"properties\" : {\"foo\" : {\"bar\" : \"baz\"}}}");
         assertEquals(400, response.getStatus());
     }
@@ -362,7 +362,7 @@ public class WebServiceTest {
         properties.put("foo", "bar");
         properties.put("number", 15);
         GraphDbHelper.setNodeProperties(nodeId, properties);
-        Response response = service.removeNodeProperties(nodeId);
+        Response response = service.removeNodeProperties(longValue(nodeId));
         assertEquals(200, response.getStatus());
     }
 
@@ -373,14 +373,14 @@ public class WebServiceTest {
         properties.put("foo", "bar");
         properties.put("number", 15);
         GraphDbHelper.setNodeProperties(nodeId, properties);
-        service.removeNodeProperties(nodeId);
+        service.removeNodeProperties(longValue(nodeId));
         assertEquals(true, GraphDbHelper.getNodeProperties(nodeId).isEmpty());
     }
 
     @Test
     public void shouldRespondWith404ForRemoveNodePropertiesForNonExistingNode() {
         Object nodeId = 999999;
-        Response response = service.removeNodeProperties(nodeId);
+        Response response = service.removeNodeProperties(longValue(nodeId));
         assertEquals(404, response.getStatus());
     }
 
@@ -391,7 +391,7 @@ public class WebServiceTest {
         properties.put("foo", "bar");
         properties.put("number", 15);
         GraphDbHelper.setNodeProperties(nodeId, properties);
-        service.removeNodeProperty(nodeId, "foo");
+        service.removeNodeProperty(longValue(nodeId), "foo");
         assertEquals(Collections.singletonMap("number", (Object) new Integer(15)), GraphDbHelper
                 .getNodeProperties(nodeId));
     }
@@ -403,14 +403,14 @@ public class WebServiceTest {
         properties.put("foo", "bar");
         properties.put("number", 15);
         GraphDbHelper.setNodeProperties(nodeId, properties);
-        Response response = service.removeNodeProperty(nodeId, "baz");
+        Response response = service.removeNodeProperty(longValue(nodeId), "baz");
         assertEquals(404, response.getStatus());
     }
 
     @Test
     public void shouldGet404WhenRemovingPropertyFromNonExistingNode() {
         Object nodeId = 999999;
-        Response response = service.removeNodeProperty(nodeId, "foo");
+        Response response = service.removeNodeProperty(longValue(nodeId), "foo");
         assertEquals(404, response.getStatus());
     }
 
@@ -490,23 +490,23 @@ public class WebServiceTest {
         GraphDbHelper.createRelationship("LIKES", GraphDbHelper.createNode(), nodeId);
         GraphDbHelper.createRelationship("HATES", nodeId, GraphDbHelper.createNode());
 
-        Response response = service.getRelationships(nodeId, RelationshipDirection.all, new AmpersandSeparatedList());
+        Response response = service.getRelationships(longValue(nodeId), RelationshipDirection.all, new AmpersandSeparatedList());
         assertEquals(200, response.getStatus());
         verifyRelReps(3, (String) response.getEntity());
 
-        response = service.getRelationships(nodeId, RelationshipDirection.in, new AmpersandSeparatedList());
+        response = service.getRelationships(longValue(nodeId), RelationshipDirection.in, new AmpersandSeparatedList());
         assertEquals(200, response.getStatus());
         verifyRelReps(1, (String) response.getEntity());
 
-        response = service.getRelationships(nodeId, RelationshipDirection.out, new AmpersandSeparatedList());
+        response = service.getRelationships(longValue(nodeId), RelationshipDirection.out, new AmpersandSeparatedList());
         assertEquals(200, response.getStatus());
         verifyRelReps(2, (String) response.getEntity());
 
-        response = service.getRelationships(nodeId, RelationshipDirection.out, new AmpersandSeparatedList("LIKES&HATES"));
+        response = service.getRelationships(longValue(nodeId), RelationshipDirection.out, new AmpersandSeparatedList("LIKES&HATES"));
         assertEquals(200, response.getStatus());
         verifyRelReps(2, (String) response.getEntity());
 
-        response = service.getRelationships(nodeId, RelationshipDirection.all, new AmpersandSeparatedList("LIKES"));
+        response = service.getRelationships(longValue(nodeId), RelationshipDirection.all, new AmpersandSeparatedList("LIKES"));
         assertEquals(200, response.getStatus());
         verifyRelReps(2, (String) response.getEntity());
     }
@@ -523,7 +523,7 @@ public class WebServiceTest {
     public void shouldRespondWith200AndEmptyListOfRelationshipRepresentationsWhenGettingRelationshipsForANodeWithoutRelationships() {
         Long nodeId = GraphDbHelper.createNode();
 
-        Response response = service.getRelationships(nodeId, RelationshipDirection.all, new AmpersandSeparatedList());
+        Response response = service.getRelationships(longValue(nodeId), RelationshipDirection.all, new AmpersandSeparatedList());
         assertEquals(200, response.getStatus());
         verifyRelReps(0, (String) response.getEntity());
     }
@@ -645,7 +645,22 @@ public class WebServiceTest {
         Response response = service.removeRelationshipProperty(UNKNOWN_NODE,relationshipId.getType(), "some-key");
         assertEquals(404, response.getStatus());
     }
-    
+
+    @Test
+    public void shouldRespondWith200AndResultRepresentationInJSONWhenNodeAndEvalPropertyNameRequested() throws Exception {
+        final long nodeId = GraphDbHelper.createNode();
+        GraphDbHelper.setNodeProperties(nodeId,Collections.<String,Object>singletonMap("name","neo"));
+
+
+        Response response = service.evaluate(nodeId,"/@name");
+        assertEquals(200, response.getStatus());
+        String json = (String) response.getEntity();
+        List<Object> result = JsonHelper.jsonToList(json);
+        assertNotNull(result);
+        assertEquals(1,result.size());
+        assertEquals("neo",result.get(0));
+    }
+
     private UriInfo uriInfo() {
         UriInfo mockUriInfo = mock(UriInfo.class);
         try {

@@ -1,9 +1,11 @@
 package com.tinkerpop.restling.domain;
 
-import com.tinkerpop.gremlin.models.ggm.Edge;
-import com.tinkerpop.gremlin.models.ggm.Element;
-import com.tinkerpop.gremlin.models.ggm.Graph;
-import com.tinkerpop.gremlin.models.ggm.Vertex;
+
+import com.tinkerpop.gremlin.GremlinEvaluator;
+import com.tinkerpop.gremlin.models.pgm.Edge;
+import com.tinkerpop.gremlin.models.pgm.Element;
+import com.tinkerpop.gremlin.models.pgm.Graph;
+import com.tinkerpop.gremlin.models.pgm.Vertex;
 
 import java.net.URI;
 import java.util.LinkedList;
@@ -101,7 +103,7 @@ public class StorageActions {
 
     private Object getProperty(Element element, String key) {
         final Object result = element.getProperty(key);
-        if (result==null) throw new PropertyValueException("property not found "+key+" for vertex "+ element);
+        if (result==null) throw new PropertyValueException("property not found "+key+" for element "+ element);
         return result;
     }
 
@@ -296,5 +298,14 @@ public class StorageActions {
             }
         });
     }
-
+    public Object evaluate(final Object nodeId, final String code) {
+        return inTransaction(new Callable<Object>() {
+            public Object call() throws Exception {
+                final GremlinEvaluator evaluator = new GremlinEvaluator();
+                evaluator.getVariables().put("$_g", graphdb);
+                evaluator.getVariables().put("$_", graphdb.getVertex(nodeId));
+                return evaluator.evaluate(String.format("g:to-json(./%s)",code)); 
+            }
+        });
+    }
 }
